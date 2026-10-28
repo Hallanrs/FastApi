@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 from models import Usuario
 from dependencies import pegar_sessao
 from main import bcrypt_context
+from schemas import UsuarioSchema
+from sqlalchemy.orm import Session
 
 auth_router = APIRouter (prefix="/auth", tags=["auth"])
 
@@ -10,7 +12,7 @@ async def autenticar():
     return {"mensagem", "você está autenticado"}
 
 @auth_router.post("/criar_conta")
-async def criar_conta(email: str, senha: str, nome: str, session = Depends(pegar_sessao)):
+async def criar_conta(usuario_schema: UsuarioSchema, session: Session = Depends(pegar_sessao)):
     usuario = session.query(Usuario).filter(Usuario.email==email).first()
     if usuario:
         return{"mensagem:": "Esse usuário já existe"}
